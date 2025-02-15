@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WorldForge Lite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #87CEEB;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+        h1 {
+            margin: 10px;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 80vh;
+            background-color: #4CAF50;
+            border-top: 5px solid darkgreen;
+            overflow: hidden;
+        }
+        .block {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: brown;
+            border: 1px solid black;
+        }
+        #toolbar {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .button {
+            padding: 10px;
+            background: darkorange;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        .button:hover {
+            background: orangered;
+        }
+    </style>
+</head>
+<body>
+    <h1>WorldForge Lite 🌍</h1>
+    <p>Click to place blocks. Click again to remove.</p>
+    
+    <div id="game-container"></div>
+
+    <div id="toolbar">
+        <button class="button" id="clear">Clear All</button>
+    </div>
+
+    <script>
+        let gameContainer = document.getElementById("game-container");
+        let blockSize = 30;
+        let blocks = [];
+
+        function placeBlock(x, y) {
+            let snappedX = Math.floor(x / blockSize) * blockSize;
+            let snappedY = Math.floor(y / blockSize) * blockSize;
+
+            let existingBlock = blocks.find(block => block.x === snappedX && block.y === snappedY);
+
+            if (existingBlock) {
+                gameContainer.removeChild(existingBlock.element);
+                blocks = blocks.filter(block => block !== existingBlock);
+            } else {
+                let block = document.createElement("div");
+                block.classList.add("block");
+                block.style.left = snappedX + "px";
+                block.style.top = snappedY + "px";
+                gameContainer.appendChild(block);
+                
+                blocks.push({ x: snappedX, y: snappedY, element: block });
+            }
+        }
+
+        gameContainer.addEventListener("click", (event) => {
+            let rect = gameContainer.getBoundingClientRect();
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+            placeBlock(x, y);
+        });
+
+        document.getElementById("clear").addEventListener("click", () => {
+            blocks.forEach(block => gameContainer.removeChild(block.element));
+            blocks = [];
+        });
+    </script>
+</body>
+</html>
